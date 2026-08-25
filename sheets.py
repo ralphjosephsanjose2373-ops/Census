@@ -1,7 +1,3 @@
-"""
-Google Sheets read / write / formatting helpers.
-"""
-
 from __future__ import annotations
 
 import logging
@@ -22,7 +18,6 @@ def _get_service(credentials: Credentials):
 
 
 def get_sheet_id_by_name(service: Any, spreadsheet_id: str, title: str) -> int:
-    """Return the numeric sheetId for a given sheet title."""
     meta = service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
     for sheet in meta.get("sheets", []):
         props = sheet.get("properties", {})
@@ -49,7 +44,6 @@ def get_existing_values(
 
 
 def month_already_exists(values: List[List[Any]], month_label: str) -> bool:
-    """Check whether a row with the given month label already exists."""
     for row in values:
         if row and str(row[0]).strip() == month_label:
             return True
@@ -63,7 +57,6 @@ def ensure_headers(
     sheet_name: str,
     values: List[List[Any]],
 ) -> None:
-    """Write the header row if the sheet is currently empty."""
     if values:
         return
 
@@ -117,10 +110,6 @@ def write_and_format_row(
     row: List[Any],
     existing_row_count: int,
 ) -> int:
-    """
-    Append a data row and format the CTR column as percent.
-    Returns the 1-based row number that was written.
-    """
     service = _get_service(credentials)
     next_row = existing_row_count + 1
     range_name = f"{sheet_name}!A{next_row}"

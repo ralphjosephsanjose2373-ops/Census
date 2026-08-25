@@ -1,7 +1,3 @@
-"""
-Google Analytics 4 data fetching.
-"""
-
 from __future__ import annotations
 
 import logging
@@ -13,7 +9,6 @@ from google.analytics.data_v1beta.types import (
     Dimension,
     Filter,
     FilterExpression,
-    InListFilter,
     Metric,
     RunReportRequest,
 )
@@ -33,17 +28,14 @@ def fetch_ga4_data(
     start: date,
     end: date,
 ) -> GA4Data:
-    """
-    Fetch core metrics, engaged sessions by channel, and selected custom events
-    for the given date range.
-    """
     client = BetaAnalyticsDataClient(credentials=credentials)
-    date_range = DateRange(start_date=start.isoformat(), end_date=end.isoformat())
+    date_range = DateRange(
+        start_date=start.isoformat(),
+        end_date=end.isoformat(),
+    )
+
     result = GA4Data()
 
-    # ------------------------------------------------------------------
-    # 1. Core metrics
-    # ------------------------------------------------------------------
     request = RunReportRequest(
         property=property_id,
         metrics=[
@@ -54,6 +46,7 @@ def fetch_ga4_data(
         ],
         date_ranges=[date_range],
     )
+
     response = client.run_report(request)
 
     if response.rows:
@@ -63,47 +56,62 @@ def fetch_ga4_data(
         result.events = int(mv[2].value)
         result.engagement_time = int(mv[3].value)
 
-    # ------------------------------------------------------------------
-    # 2. Engaged sessions by default channel group
-    # ------------------------------------------------------------------
     request = RunReportRequest(
         property=property_id,
-        dimensions=[Dimension(name="sessionDefaultChannelGroup")],
-        metrics=[Metric(name="engagedSessions")],
+        dimensions=[
+            Dimension(name="sessionDefaultChannelGroup")
+        ],
+        metrics=[
+            Metric(name="engagedSessions")
+        ],
         date_ranges=[date_range],
     )
+
     response = client.run_report(request)
 
     channel_map = {ch: 0 for ch in CHANNELS}
+
     for row in response.rows:
         channel = row.dimension_values[0].value
+
         if channel in channel_map:
-            channel_map[channel] += int(row.metric_values[0].value)
+            channel_map[channel] += int(
+                row.metric_values[0].value
+            )
 
-    result.engaged_sessions_by_channel = [channel_map[ch] for ch in CHANNELS]
+    result.engaged_sessions_by_channel = [
+        channel_map[ch] for ch in CHANNELS
+    ]
 
-    # ------------------------------------------------------------------
-    # 3. Custom events → active users
-    # ------------------------------------------------------------------
     if CUSTOM_EVENTS:
         request = RunReportRequest(
             property=property_id,
-            dimensions=[Dimension(name="eventName")],
-            metrics=[Metric(name="activeUsers")],
+            dimensions=[
+                Dimension(name="eventName")
+            ],
+            metrics=[
+                Metric(name="activeUsers")
+            ],
             date_ranges=[date_range],
             dimension_filter=FilterExpression(
                 filter=Filter(
                     field_name="eventName",
-                    in_list_filter=InListFilter(values=CUSTOM_EVENTS),
+                    in_list_filter=Filter.InListFilter(
+                        values=CUSTOM_EVENTS
+                    ),
                 )
             ),
         )
+
         response = client.run_report(request)
 
         for row in response.rows:
             event_name = row.dimension_values[0].value
+
             if event_name in result.custom_event_users:
-                result.custom_event_users[event_name] = int(row.metric_values[0].value)
+                result.custom_event_users[event_name] = int(
+                    row.metric_values[0].value
+                )
 
     logger.debug(
         "GA4 raw → users=%s new=%s events=%s eng_time=%s channels=%s custom=%s",
@@ -114,4 +122,5 @@ def fetch_ga4_data(
         result.engaged_sessions_by_channel,
         result.custom_event_users,
     )
+
     return result

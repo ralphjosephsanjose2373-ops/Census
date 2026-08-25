@@ -1,9 +1,3 @@
-"""
-Configuration loader and constants.
-All secrets and environment-specific values come from environment variables
-or a .env file.
-"""
-
 from __future__ import annotations
 
 import os
@@ -13,9 +7,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ---------------------------------------------------------------------------
-# Paths & credentials
-# ---------------------------------------------------------------------------
 SERVICE_ACCOUNT_FILE = Path(
     os.getenv("SERVICE_ACCOUNT_FILE", "service-account.json")
 ).expanduser().resolve()
@@ -26,7 +17,7 @@ GA4_PROPERTY_ID = os.getenv("GA4_PROPERTY_ID", "").strip()  # e.g. properties/12
 SITE_URL = os.getenv("SITE_URL", "https://www.ideellmarknadsforing.se/").strip()
 LOG_FILE = Path(os.getenv("LOG_FILE", "data_integration.log")).expanduser()
 
-# Optional notification (leave empty to disable)
+# (empty to disable)
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", "").strip()
 SMTP_HOST = os.getenv("SMTP_HOST", "").strip()
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
@@ -34,19 +25,12 @@ SMTP_USER = os.getenv("SMTP_USER", "").strip()
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "").strip()
 NOTIFY_EMAIL_TO = os.getenv("NOTIFY_EMAIL_TO", "").strip()
 
-# ---------------------------------------------------------------------------
-# Google API scopes
-# ---------------------------------------------------------------------------
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/analytics.readonly",
     "https://www.googleapis.com/auth/webmasters.readonly",
 ]
 
-# ---------------------------------------------------------------------------
-# Business constants (easy to change without touching logic)
-# ---------------------------------------------------------------------------
-# Order is preserved when writing to the sheet
 CHANNELS = [
     "Organic Social",
     "Direct",
@@ -59,7 +43,6 @@ CUSTOM_EVENTS = [
     "bli_medlem_klick",
 ]
 
-# Column headers written when the sheet is empty
 HEADERS = [
     "Month",
     "Users",
@@ -80,7 +63,6 @@ HEADERS = [
 
 
 def validate_config() -> None:
-    """Fail fast with clear messages if required settings are missing."""
     errors: list[str] = []
 
     if not SERVICE_ACCOUNT_FILE.exists():

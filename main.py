@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 """
-Monthly GA4 + Search Console → Google Sheets reporter.
-
-Usage examples:
-  python main.py
-  python main.py --dry-run
-  python main.py --month 2025-03
-  python main.py --month 2025-03 --dry-run
+_░▒███████
+░██▓▒░░▒▓██
+██▓▒░__░▒▓██___██████
+██▓▒░____░▓███▓__░▒▓██
+██▓▒░___░▓██▓_____░▒▓██
+██▓▒░_______________░▒▓██
+██▓▒░______________░▒▓██
+ ██▓▒░____________░▒▓██
+  ██▓▒░__________░▒▓██
+   ██▓▒░________░▒▓██
+    ██▓▒░_____░▒▓██
+      ██▓▒░__░▒▓██
+        █▓▒░░▒▓██
+         ░▒▓██
+       ░▒▓██
+     ░▒▓██
 """
 
 from __future__ import annotations
@@ -38,9 +47,6 @@ from sheets import (
 )
 from utils import month_label, notify_failure, parse_month, previous_month_range
 
-# ---------------------------------------------------------------------------
-# Logging setup
-# ---------------------------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
@@ -53,7 +59,6 @@ logger = logging.getLogger("main")
 
 
 def build_row(label: str, ga4: GA4Data, gsc: SearchConsoleData) -> List[Any]:
-    """Assemble the final row that will be written to the sheet."""
     return [
         label,
         ga4.users,
@@ -89,9 +94,6 @@ def run(target_month: date | None = None, dry_run: bool = False) -> None:
     label = month_label(start)
     logger.info("Processing period: %s  (%s → %s)", label, start, end)
 
-    # ------------------------------------------------------------------
-    # Fetch data
-    # ------------------------------------------------------------------
     ga4 = GA4Data()
     gsc = SearchConsoleData()
 
@@ -136,9 +138,6 @@ def run(target_month: date | None = None, dry_run: bool = False) -> None:
             logger.info("  %-35s : %s", header, value)
         return
 
-    # ------------------------------------------------------------------
-    # Sheets interaction
-    # ------------------------------------------------------------------
     try:
         existing = get_existing_values(credentials, SHEET_ID, SHEET_NAME)
 
@@ -152,9 +151,8 @@ def run(target_month: date | None = None, dry_run: bool = False) -> None:
 
         ensure_headers(credentials, SHEET_ID, SHEET_NAME, existing)
 
-        # After possible header write, re-count rows
         if not existing:
-            existing = [HEADERS]  # we just wrote them
+            existing = [HEADERS] 
 
         write_and_format_row(
             credentials,

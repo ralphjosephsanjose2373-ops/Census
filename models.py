@@ -1,7 +1,3 @@
-"""
-Data containers used across the project.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -23,7 +19,6 @@ class GA4Data:
 
     @property
     def avg_engagement_mmss(self) -> str:
-        """Average engagement time formatted as mm:ss."""
         if self.users == 0:
             return "0:00"
         avg_seconds = self.engagement_time / self.users

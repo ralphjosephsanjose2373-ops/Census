@@ -1,7 +1,3 @@
-"""
-Shared helpers: dates, retry decorator, notifications.
-"""
-
 from __future__ import annotations
 
 import logging
@@ -27,13 +23,7 @@ from config import (
 logger = logging.getLogger(__name__)
 
 F = TypeVar("F", bound=Callable[..., Any])
-
-
-# ---------------------------------------------------------------------------
-# Date helpers
-# ---------------------------------------------------------------------------
 def previous_month_range(today: Optional[date] = None) -> Tuple[date, date]:
-    """Return (first_day, last_day) of the previous calendar month."""
     today = today or date.today()
     first_of_this_month = today.replace(day=1)
     last_of_prev = first_of_this_month - timedelta(days=1)
@@ -42,34 +32,20 @@ def previous_month_range(today: Optional[date] = None) -> Tuple[date, date]:
 
 
 def month_label(d: date) -> str:
-    """e.g. 'May 2024'"""
     return f"{month_name[d.month]} {d.year}"
 
 
 def parse_month(s: str) -> date:
-    """
-    Parse 'YYYY-MM' or 'YYYY-M' into the first day of that month.
-    Raises ValueError on invalid input.
-    """
     try:
         return datetime.strptime(s, "%Y-%m").date().replace(day=1)
     except ValueError:
         return datetime.strptime(s, "%Y-%m-%d").date().replace(day=1)
 
-
-# ---------------------------------------------------------------------------
-# Retry with exponential backoff
-# ---------------------------------------------------------------------------
 def retry(
     max_attempts: int = 4,
     base_delay: float = 1.5,
     exceptions: Tuple[type, ...] = (Exception,),
 ) -> Callable[[F], F]:
-    """
-    Simple exponential-backoff retry decorator.
-    Retries on the given exceptions (default: any Exception).
-    """
-
     def decorator(func: F) -> F:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -97,12 +73,7 @@ def retry(
 
     return decorator
 
-
-# ---------------------------------------------------------------------------
-# Notifications (optional)
-# ---------------------------------------------------------------------------
 def notify_failure(subject: str, body: str) -> None:
-    """Send failure notification via Slack webhook and/or email if configured."""
     if SLACK_WEBHOOK_URL:
         try:
             requests.post(

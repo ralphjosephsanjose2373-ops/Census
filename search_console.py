@@ -1,7 +1,3 @@
-"""
-Google Search Console data fetching.
-"""
-
 from __future__ import annotations
 
 import logging
@@ -23,7 +19,6 @@ def fetch_search_console_data(
     start: date,
     end: date,
 ) -> SearchConsoleData:
-    """Fetch aggregate Search Console metrics for the given date range."""
     service = build(
         "searchconsole",
         "v1",
