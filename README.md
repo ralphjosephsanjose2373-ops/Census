@@ -225,7 +225,7 @@ python main.py
 python main.py --dry-run
 ```
 
-Fetches data and prints exactly what would be written — **no changes** are made to the sheet.
+Fetches data and prints exactly what would be written - **no changes** are made to the sheet.
 
 ### Specific month
 
@@ -341,8 +341,8 @@ Also update the `HEADERS` list in the same file and the `build_row()` function i
 
 Populate either (or both) of these sections in `.env`:
 
-- `SLACK_WEBHOOK_URL` — Slack incoming webhook
-- SMTP settings + `NOTIFY_EMAIL_TO` — email alerts
+- `SLACK_WEBHOOK_URL` - Slack incoming webhook
+- SMTP settings + `NOTIFY_EMAIL_TO` - email alerts
 
 ---
 
@@ -364,7 +364,7 @@ Logs are written to both the console and the file defined by `LOG_FILE` (default
 
 ## Security Notes
 
-- The service-account JSON key grants access to your analytics and spreadsheet data — keep it private
+- The service-account JSON key grants access to your analytics and spreadsheet data - keep it private
 - Never commit `.env` or the JSON key to version control
 - Grant the service account the **minimum** permissions required:
   - Viewer on the GA4 property
